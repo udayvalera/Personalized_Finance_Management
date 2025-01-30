@@ -32,6 +32,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
     hasFilledAdditionalInfo: {
       type: Boolean,
       default: false,
@@ -44,6 +48,18 @@ const UserSchema = new mongoose.Schema(
       type: Date, // Store the OTP expiration time
       default: null,
     },
+    friends: [
+      {
+        type: String, // Changed to String to store usernames
+        ref: "User",
+      },
+    ],
+    pendingRequests: [
+      {
+        type: String, // Changed to String to store usernames
+        ref: "User",
+      },
+    ],
   },
   {
     timestamps: true,
