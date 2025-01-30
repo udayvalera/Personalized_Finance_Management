@@ -4,7 +4,7 @@ const router = express.Router();
 const registerController = require("../controllers/auth/registerController");
 const verifyOTPController = require("../controllers/auth/verifyOTPController");
 const loginController = require("../controllers/auth/loginController");
-const {forgotPasswordController, resetPasswordController} = require("../controllers/auth/forgotPasswordController");
+const {forgotPasswordController, resetPasswordController} = require("../controllers/auth/forgetPasswordController");
 
 
 

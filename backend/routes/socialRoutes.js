@@ -6,8 +6,6 @@ const { sendFriendRequest, acceptFriendRequest, rejectFriendRequest, cancelFrien
 router.post("/sendFriendRequest", sendFriendRequest);
 router.post("/acceptFriendRequest", acceptFriendRequest);
 router.post("/rejectFriendRequest", rejectFriendRequest);
-router.post("/cancelFriendRequest", cancelFriendRequest);
-router.post("/removeFriend", removeFriend);
 router.get("/getPendingRequests", getPendingRequests);
 
 module.exports = router;

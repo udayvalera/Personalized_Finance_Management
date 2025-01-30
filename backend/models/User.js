@@ -36,6 +36,10 @@ const UserSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+    isAnonymous: {
+      type: Boolean,
+      default: false,
+    },
     hasFilledAdditionalInfo: {
       type: Boolean,
       default: false,

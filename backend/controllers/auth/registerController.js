@@ -1,7 +1,7 @@
-const User = require('../models/User'); // Import the User model
+const User = require('../../models/User'); // Import the User model
 const bcrypt = require('bcryptjs');
-const { generateOTP } = require('../utils/otpUtils'); // Import the generateOTP function
-const { sendOTPEmail } = require('../utils/emailUtils'); // Import the sendOTPEmail function
+const { generateOTP } = require('../../utils/otpUtils'); // Import the generateOTP function
+const { sendOTPEmail } = require('../../utils/emailUtils'); // Import the sendOTPEmail function
 
 // Register controller
 const registerController = async (req, res) => {

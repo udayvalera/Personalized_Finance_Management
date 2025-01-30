@@ -1,6 +1,6 @@
-const User = require("../models/User"); // Import the User model
+const User = require('../../models/User');  // Import the User model
 const bcrypt = require("bcryptjs");
-const { generateToken } = require("../utils/jwtUtils"); // Import the generateToken function for JWT
+const { generateToken } = require("../../utils/jwtUtils"); // Import the generateToken function for JWT
 
 // Login controller
 const loginController = async (req, res) => {

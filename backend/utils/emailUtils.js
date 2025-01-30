@@ -32,6 +32,23 @@ const sendOTPEmail = async (email, otp) => {
   }
 };
 
+const sendReminderEmail = async (email) => {
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "Don't Break Your Streak!",
+    text: "Remember to complete your daily action today to maintain your streak!"
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    return true;
+  } catch (error) {
+    console.error("Error sending reminder email:", error);
+    return false;
+  }
+};
+
 module.exports = {
   sendOTPEmail,
 };

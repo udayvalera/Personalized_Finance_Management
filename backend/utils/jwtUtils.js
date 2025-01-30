@@ -1,3 +1,4 @@
+const { verify } = require('crypto');
 const jwt = require('jsonwebtoken');
 
 // Hardcoded JWT secret (replace with a strong secret in production)
@@ -22,8 +23,9 @@ const verifyToken = (token) => {
         const decoded = jwt.verify(token, JWT_SECRET);
         return decoded;
     } catch (error) {
+        // Log the error and return null instead of throwing an error
         console.error('Error verifying token:', error);
-        throw new Error('Invalid or expired token');
+        return null;  // Or you can return a custom error message
     }
 };
 

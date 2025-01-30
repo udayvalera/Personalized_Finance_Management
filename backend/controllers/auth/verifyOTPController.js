@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const { validateOTP } = require('../utils/otpUtils'); // Import the validateOTP function
+const User = require('../../models/User'); 
+const { validateOTP } = require('../../utils/otpUtils'); // Import the validateOTP function
 
 const verifyOTPController = async (req, res) => {
     const { email, otp } = req.body;
