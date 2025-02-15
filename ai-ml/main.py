@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-from financial_recommender import financial_recommender
+from financial_recommender import get_recommendations
 from budget_model import budget_model
 from reciept_model import reciept_model
 from stress_score import get_recommendations as get_stress_recommendations
@@ -24,9 +24,13 @@ def stress_score():
     result = get_stress_recommendations(data['budget_data'])
     return jsonify(result)
 
-@app.route("/financial-recommender")
-def financial_recommender():
-    return "Financial Recommender"
+@app.route("/financial-recommender", methods=['POST'])
+def handle_financial_recommendation():
+    data = request.get_json()
+    if not data or 'user_data' not in data:
+        return jsonify({"error": "Missing required user data"}), 400
+    result = get_recommendations(data['user_data'])
+    return jsonify(result)
 
 @app.route("/budget-model", methods=['POST'])
 def budget_planning():
