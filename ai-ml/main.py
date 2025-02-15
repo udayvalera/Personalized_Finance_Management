@@ -24,9 +24,13 @@ def stress_score():
 # def financial_recommender():
 #     return "Financial Recommender"
 
-@app.route("/budget-model")
-def budget_model():
-    return "Budget Models"
+@app.route("/budget-model", methods=['POST'])
+def budget_planning():
+    data = request.get_json()
+    if not data or 'income' not in data:
+        return jsonify({"error": "Missing required budget data"}), 400
+    result = budget_model(data)
+    return jsonify(result)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=8080, host='0.0.0.0')
