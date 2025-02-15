@@ -1,24 +1,19 @@
-const { verifyToken } = require('../utils/jwtUtils');
+const { verifyToken } = require("../utils/jwtUtils");
 
-const authMiddleware = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res.status(401).json({ message: 'No token provided' });
-    }
+const authenticate = (req, res, next) => {
+  const token = req.header("Authorization")?.replace("Bearer ", "");
 
-    const token = authHeader.split(' ')[1];
-    const decoded = verifyToken(token);
-
-    if (!decoded) {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(500).json({ message: 'Internal server error' });
+  if (!token) {
+    return res.status(401).json({ message: "No token, authorization denied" });
   }
+
+  const decoded = verifyToken(token);
+  if (!decoded) {
+    return res.status(401).json({ message: "Token is not valid" });
+  }
+
+  req.user = { id: decoded.userId }; // Set req.user.id
+  next();
 };
 
-module.exports = authMiddleware;
+module.exports = { authenticate };

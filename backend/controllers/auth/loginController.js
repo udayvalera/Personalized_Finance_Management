@@ -5,7 +5,6 @@ const { generateToken } = require("../../utils/jwtUtils"); // Import the generat
 // Login controller
 const loginController = async (req, res) => {
   const { email, password } = req.body;
-
   // Validate input
   if (!email || !password) {
     return res.status(400).json({ message: "Email and password are required" });
@@ -14,7 +13,7 @@ const loginController = async (req, res) => {
   try {
     // Find the user by email
     const user = await User.findOne({ email });
-    console.log(user);
+    // console.log(user);
     if (!user) {
       return res.status(401).json({ message: "Invalid email" });
     }

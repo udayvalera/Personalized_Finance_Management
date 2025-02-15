@@ -3,49 +3,73 @@ const Expense = require("../models/Expense"); // Import the Expense model
 const User = require("../models/User"); // Import the User model
 const connectDB = require("../config/database"); // Import existing DB connection
 
-// Sample Expense Data (Uses existing users)
+// Sample Expense Data (Uses existing user)
 async function getSampleExpenses() {
-    // Fetch usernames from the database
-    const users = await User.find({}, "username");
+  // Fetch users from the database
+  const users = await User.find({ _id: "679b905ceb4742dd9ba077e7" }); // Fetch user by the provided userId
 
-    // If no users exist, exit
-    if (users.length === 0) {
-        console.log("No users found. Please seed users first.");
-        process.exit(1);
-    }
+  // If no user found, exit
+  if (users.length === 0) {
+    console.log("No user found with the given userId.");
+    process.exit(1);
+  }
 
-    return [
-        { username: users[0].username, amount: 500, category: "Food", description: "Grocery shopping", date: new Date("2024-01-01") },
-        { username: users[1].username, amount: 1200, category: "Rent", description: "Monthly house rent", date: new Date("2024-01-02") },
-        { username: users[2].username, amount: 200, category: "Transport", description: "Fuel expenses", date: new Date("2024-01-03") },
-        { username: users[3].username, amount: 100, category: "Entertainment", description: "Movie ticket", date: new Date("2024-01-04") },
-        { username: users[4].username, amount: 300, category: "Utilities", description: "Electricity bill", date: new Date("2024-01-05") },
-        { username: users[5].username, amount: 150, category: "Healthcare", description: "Doctor consultation", date: new Date("2024-01-06") },
-        { username: users[6].username, amount: 80, category: "Miscellaneous", description: "Stationery purchase", date: new Date("2024-01-07") },
-    ];
+  // Sample expense data
+  return [
+    {
+      userId: users[0]._id,
+      amount: 100,
+      category: "Groceries",
+      description: "Weekly grocery shopping",
+    },
+    {
+      userId: users[0]._id,
+      amount: 50,
+      category: "Transportation",
+      description: "Taxi ride to the office",
+    },
+    {
+      userId: users[0]._id,
+      amount: 200,
+      category: "Utilities",
+      description: "Monthly electricity bill",
+    },
+    {
+      userId: users[0]._id,
+      amount: 80,
+      category: "Dining Out",
+      description: "Dinner at a restaurant",
+    },
+    {
+      userId: users[0]._id,
+      amount: 120,
+      category: "Entertainment",
+      description: "Movie and snacks",
+    },
+  ];
 }
 
 // Insert Data into MongoDB
 async function seedExpenses() {
-    try {
-        await connectDB(); // Use existing DB connection
-        // console.log("Connected to MongoDB");
+  try {
+    await connectDB(); // Use existing DB connection
+    // console.log("Connected to MongoDB");
 
-        const expenses = await getSampleExpenses();
+    const expenses = await getSampleExpenses();
 
-        // Clear existing data (optional)
-        await Expense.deleteMany({});
-        console.log("Existing expenses removed");
+    // Clear existing data (optional)
+    await Expense.deleteMany({ userId: "679b905ceb4742dd9ba077e7" }); // Clear expenses for the given userId
+    console.log("Existing expense records removed");
 
-        // Insert new sample data
-        await Expense.insertMany(expenses);
-        console.log("Sample expenses added successfully");
+    // Insert new sample data
+    await Expense.insertMany(expenses);
+    console.log("Sample expense records added successfully");
 
-        mongoose.connection.close();
-    } catch (error) {
-        console.error("Error seeding expenses:", error);
-        mongoose.connection.close();
-    }
+    mongoose.connection.close();
+  } catch (error) {
+    console.error("Error seeding expense records:", error);
+    mongoose.connection.close();
+  }
 }
 
 // Run Seeder

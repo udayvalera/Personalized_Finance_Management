@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 
 const GoalSchema = new mongoose.Schema(
     {
-        username: {
-            type: String, // Storing username instead of ObjectId
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
-        },
+          },
         goalName: {
             type: String,
             required: true,

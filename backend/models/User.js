@@ -72,10 +72,10 @@ const UserSchema = new mongoose.Schema(
 
 // Method to compare password for login
 UserSchema.methods.comparePassword = async function (candidatePassword) {
-  console.log("Candidate Password:", candidatePassword);
-  console.log("Stored Hashed Password:", this.password);
+  // console.log("Candidate Password:", candidatePassword);
+  // console.log("Stored Hashed Password:", this.password);
   const isMatch = await bcrypt.compare(candidatePassword, this.password);
-  console.log("Password Match:", isMatch);
+  // console.log("Password Match:", isMatch);
   return isMatch;
 };
 

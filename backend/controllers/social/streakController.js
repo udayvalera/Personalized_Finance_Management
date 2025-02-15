@@ -1,6 +1,6 @@
 const Streak = require("../../models/Streak");
 const User = require("../../models/User");
-const { sendReminderEmail } = require("../utils/emailUtils");
+// const { sendReminderEmail } = require("../utils/emailUtils");
 
 const updateStreak = async (userId) => {
   try {
