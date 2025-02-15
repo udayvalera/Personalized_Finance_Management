@@ -1,5 +1,5 @@
-from flask import Flask
-# from financial_recommender import financial_recommender
+from flask import Flask, jsonify, request
+from financial_recommender import financial_recommender
 from budget_model import budget_model
 from reciept_model import reciept_model
 # from stress_score import stress_score
