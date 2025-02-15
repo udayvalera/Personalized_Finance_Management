@@ -20,9 +20,9 @@ def receipt():
 def stress_score():
     return "Stress Score"
 
-# @app.route("/financial-recommender")
-# def financial_recommender():
-#     return "Financial Recommender"
+@app.route("/financial-recommender")
+def financial_recommender():
+    return "Financial Recommender"
 
 @app.route("/budget-model", methods=['POST'])
 def budget_planning():
