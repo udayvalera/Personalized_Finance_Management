@@ -69,7 +69,7 @@ const getExpenseById = async (req, res) => {
   try {
     const expense = await Expense.findOne({
       _id: req.params.id,
-      user: req.user.id,
+      userId: req.user.id,
     });
 
     if (!expense) {
@@ -93,7 +93,7 @@ const updateExpense = async (req, res) => {
     // Find the expense and ensure it belongs to the user
     let expense = await Expense.findOne({
       _id: req.params.id,
-      user: req.user.id,
+      userId: req.user.id,
     });
 
     if (!expense) {
@@ -122,7 +122,7 @@ const deleteExpense = async (req, res) => {
   try {
     const expense = await Expense.findOne({
       _id: req.params.id,
-      user: req.user.id,
+      userId: req.user.id,
     });
 
     if (!expense) {
