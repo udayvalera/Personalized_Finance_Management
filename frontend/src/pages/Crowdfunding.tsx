@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Search, Filter, TrendingUp, Users, Clock, Target, Plus, Share2, Heart, X } from 'lucide-react';
+import axios from 'axios';
 
 interface Campaign {
   id: string;
@@ -18,7 +19,7 @@ interface Campaign {
 }
 
 export default function Crowdfunding() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,44 +47,15 @@ export default function Crowdfunding() {
     fetchCampaigns();
   }, [selectedCategory]);
 
-  const fetchCampaigns = () => {
-    const hardcodedCampaigns: Campaign[] = [
-      {
-        id: '1',
-        title: 'Tech Innovation',
-        description: 'A revolutionary tech project',
-        goal_amount: 10000,
-        current_amount: 5000,
-        image_url: 'https://via.placeholder.com/400',
-        category: 'technology',
-        end_date: '2023-12-31',
-        creator_id: '123',
-        creator_name: 'John Doe',
-        supporter_count: 150,
-        created_at: '2023-10-01'
-      },
-      {
-        id: '2',
-        title: 'Green Energy',
-        description: 'A project to promote green energy',
-        goal_amount: 20000,
-        current_amount: 10000,
-        image_url: 'https://via.placeholder.com/400',
-        category: 'environment',
-        end_date: '2023-11-15',
-        creator_id: '456',
-        creator_name: 'Jane Smith',
-        supporter_count: 200,
-        created_at: '2023-09-15'
-      }
-    ];
-
-    const filteredCampaigns = selectedCategory === 'all' 
-      ? hardcodedCampaigns 
-      : hardcodedCampaigns.filter(campaign => campaign.category === selectedCategory);
-
-    setCampaigns(filteredCampaigns);
-    setLoading(false);
+  const fetchCampaigns = async () => {
+    try {
+      const response = await axios.get('http://localhost:5050/api/v1/social/crowdfunding/active');
+      setCampaigns(response.data);
+    } catch (error) {
+      console.error('Failed to fetch campaigns:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const calculateTimeLeft = (endDate: string) => {
@@ -106,29 +78,38 @@ export default function Crowdfunding() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Creating new campaign:', formData); // Console log the form data
+    try {
+      const response = await axios.post('http://localhost:5050/api/v1/social/crowdfunding', formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setCampaigns((prevCampaigns) => [response.data.campaign, ...prevCampaigns]);
+      setShowCreateModal(false);
+      setFormData({
+        title: '',
+        description: '',
+        goal_amount: 0,
+        image_url: '',
+        category: '',
+        end_date: ''
+      });
+    } catch (error) {
+      console.error('Failed to create campaign:', error);
+    }
+  };
 
-    const newCampaign: Campaign = {
-      id: (campaigns.length + 1).toString(),
-      ...formData,
-      creator_id: user?.id || 'unknown',
-      creator_name: user?.user_metadata?.full_name || 'Anonymous',
-      current_amount: 0,
-      supporter_count: 0,
-      created_at: new Date().toISOString()
-    };
-
-    console.log('Campaign created successfully:', newCampaign); // Console log success
-    setCampaigns((prevCampaigns) => [newCampaign, ...prevCampaigns]);
-    setShowCreateModal(false);
-    setFormData({
-      title: '',
-      description: '',
-      goal_amount: 0,
-      image_url: '',
-      category: '',
-      end_date: ''
-    });
+  const handleSupportCampaign = async (campaignId: string, amount: number) => {
+    try {
+      const response = await axios.post(`http://localhost:5050/api/v1/social/crowdfunding/${campaignId}/support`, { amount }, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      fetchCampaigns(); // Refresh the list of campaigns
+    } catch (error) {
+      console.error('Failed to support campaign:', error);
+    }
   };
 
   return (
@@ -140,10 +121,7 @@ export default function Crowdfunding() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 sm:mb-4">Community-Powered Finance</h1>
             <p className="text-lg sm:text-xl mb-4 sm:mb-8">Support innovative financial projects or start your own campaign</p>
             <button
-              onClick={() => {
-                console.log('Opening create campaign modal'); // Console log modal opening
-                setShowCreateModal(true);
-              }}
+              onClick={() => setShowCreateModal(true)}
               className="inline-flex items-center px-4 sm:px-6 py-2 sm:py-3 bg-white text-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm sm:text-base"
             >
               <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
@@ -369,7 +347,7 @@ export default function Crowdfunding() {
                     </div>
 
                     <button 
-                      onClick={() => console.log('Support campaign:', campaign.id)}
+                      onClick={() => handleSupportCampaign(campaign.id, 10)} // Example: support with $10
                       className="w-full py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
                     >
                       Support Project

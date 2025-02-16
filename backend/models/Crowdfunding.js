@@ -25,10 +25,6 @@ const campaignSchema = new mongoose.Schema(
     image_url: {
       type: String,
       required: [true, "Image URL is required"],
-      match: [
-        /^(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|jpeg|gif|png|webp)$/,
-        "Invalid image URL format",
-      ],
     },
     category: {
       type: String,
