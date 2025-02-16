@@ -23,7 +23,7 @@ const createExpense = async (req, res) => {
 
     // Create the expense
     const expense = new Expense({
-      user: req.user.id,
+      userId: req.user.id,
       amount,
       category,
       description,

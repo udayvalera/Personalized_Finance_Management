@@ -13,6 +13,7 @@ const authenticate = (req, res, next) => {
   }
 
   req.user = { id: decoded.userId }; // Set req.user.id
+  console.log(req.user.id);
   next();
 };
 

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const ExpenseSchema = new mongoose.Schema({
   userId: {
@@ -16,7 +16,7 @@ const ExpenseSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
+    required: false,
   },
   date: {
     type: Date,
@@ -24,4 +24,4 @@ const ExpenseSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Expense', ExpenseSchema);
+module.exports = mongoose.model("Expense", ExpenseSchema);

@@ -58,5 +58,5 @@ def parse_budget(description: str) -> dict:
 # parse_budget(budget_description)
 
 def budget_model(budget_description):
-    budget_description = input("Enter the prompt")
+    # budget_description = input("Enter the prompt")
     parse_budget(budget_description)

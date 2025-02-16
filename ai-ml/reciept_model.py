@@ -12,6 +12,8 @@ import os
 
 load_dotenv()
 
+pytesseract.pytesseract.tesseract_cmd = 'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
+
 API_KEY = os.environ.get("GROQ_API_KEY")
 MODEL_NAME = os.environ.get('MODEL_NAME')
 
@@ -30,7 +32,7 @@ parser = JsonOutputParser(pydantic_object={
 })
 
 prompt = ChatPromptTemplate.from_messages([
-    ("system", """Extract product details into JSON with this structure:
+    ("system", """Extract product details into JSON with this structure(If there are multiple products, provide a total sum of all prices):
         {{
             "name": "product name here",
             "price": number_here_without_currency_symbol
@@ -48,13 +50,26 @@ class ParsedReceiptData(BaseModel):
     products: List[Product]
 
 def preprocess_receipt(image_path):
-
+    print(f"Inside preprocess_receipt. File path: {image_path}")
+    
+    # Verify the file exists
+    if not os.path.exists(image_path):
+        raise FileNotFoundError(f"File not found at path: {image_path}")
+    
+    # Read the image using OpenCV
     image = cv2.imread(image_path)
     
+    # Check if the image was loaded successfully
+    if image is None:
+        raise ValueError(f"Failed to read image from path: {image_path}. Check if the file is a valid image.")
+    
+    # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
+    # Apply adaptive thresholding
     processed = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C,
                                       cv2.THRESH_BINARY, 11, 2)
+    
     return processed
 
 def extract_text_from_receipt(image_path):
