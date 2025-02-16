@@ -1,15 +1,24 @@
 const express = require("express");
 const router = express.Router();
 
-const { sendFriendRequest, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, getPendingRequests } = require("../controllers/social/friendController");
-const { 
+const {
+  getFriends,
+  sendFriendRequest,
+  acceptFriendRequest,
+  rejectFriendRequest,
+  cancelFriendRequest,
+  removeFriend,
+  getPendingRequests,
+} = require("../controllers/social/friendController");
+const {
   createCampaign,
   getActiveCampaigns,
   getPendingCampaigns,
   moderateCampaign,
-  supportCampaign
+  supportCampaign,
 } = require("../controllers/social/CrowdfundingController");
 
+router.get("/getFriends", getFriends);
 router.post("/sendFriendRequest", sendFriendRequest);
 router.post("/acceptFriendRequest", acceptFriendRequest);
 router.post("/rejectFriendRequest", rejectFriendRequest);

@@ -59,7 +59,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/admin", adminMiddleware, adminRoutes);
 // app.use("/api/v1/admin", adminRoutes);
 
-app.use("/api/v1/social", socialRoutes);
+app.use("/api/v1/social", authenticate, socialRoutes);
 
 app.use("/api/v1/finance", authenticate, financeRoutes);
 

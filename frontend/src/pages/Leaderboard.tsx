@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Search, Trophy, Flame, Medal, Crown, Star, Users } from 'lucide-react';
+import axios from 'axios';
 
 interface User {
   id: string;
@@ -10,7 +11,8 @@ interface User {
   tier: string;
   total_points: number;
   email: string;
-  isFriend?: boolean; // Added to distinguish friends
+  isFriend?: boolean;
+  username: string; // Added username to match the backend model
 }
 
 interface Achievement {
@@ -29,17 +31,11 @@ const getBadgeForStreak = (streak: number) => {
 };
 
 export default function Leaderboard() {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
-
-  // Hardcoded data for demonstration
-  const [users] = useState<User[]>([
-    { id: '1', full_name: 'John Doe', avatar_url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop', current_streak: 25, tier: 'platinum', total_points: 1200, email: 'john@example.com', isFriend: true },
-    { id: '2', full_name: 'Jane Smith', avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop', current_streak: 15, tier: 'gold', total_points: 800, email: 'jane@example.com', isFriend: false },
-    { id: '3', full_name: 'Mike Johnson', avatar_url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop', current_streak: 8, tier: 'silver', total_points: 400, email: 'mike@example.com', isFriend: true },
-    { id: '4', full_name: 'Alice Brown', avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&h=100&fit=crop', current_streak: 30, tier: 'platinum', total_points: 1500, email: 'alice@example.com', isFriend: true },
-    { id: '5', full_name: 'Bob White', avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop', current_streak: 10, tier: 'gold', total_points: 700, email: 'bob@example.com', isFriend: false },
-  ]);
+  const [users, setUsers] = useState<User[]>([]);
+  const [friends, setFriends] = useState<User[]>([]);
+  const [pendingRequests, setPendingRequests] = useState<User[]>([]);
 
   const [achievements] = useState<Achievement[]>([
     { id: '1', name: '100 Days of Savings', description: 'Save consistently for 100 days', icon: '💰', unlocked: true },
@@ -48,9 +44,75 @@ export default function Leaderboard() {
     { id: '4', name: 'Unbreakable Streak', description: 'Maintain a streak for 2 years', icon: '⭐', unlocked: false },
   ]);
 
-  const currentUser = users[0]; // Simulating current user
+  useEffect(() => {
+    fetchFriends();
+    fetchPendingRequests();
+  }, []);
 
-  // Filter users based on search and only show friends
+  const fetchFriends = async () => {
+    try {
+      const response = await axios.get('http://localhost:5050/api/v1/social/getFriends', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFriends(response.data);
+    } catch (error) {
+      console.error('Error fetching friends:', error);
+    }
+  };
+
+  const fetchPendingRequests = async () => {
+    try {
+      const response = await axios.get('http://localhost:5050/api/v1/social/getPendingRequests', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setPendingRequests(response.data);
+    } catch (error) {
+      console.error('Error fetching pending requests:', error);
+    }
+  };
+
+  const sendFriendRequest = async (targetUsername: string) => {
+    try {
+      await axios.post(
+        'http://localhost:5050/api/v1/social/sendFriendRequest',
+        { targetUsername },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Friend request sent');
+    } catch (error) {
+      console.error('Error sending friend request:', error);
+    }
+  };
+
+  const acceptFriendRequest = async (requesterUsername: string) => {
+    try {
+      await axios.post(
+        'http://localhost:5050/api/v1/social/acceptFriendRequest',
+        { requesterUsername },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Friend request accepted');
+      fetchFriends();
+      fetchPendingRequests();
+    } catch (error) {
+      console.error('Error accepting friend request:', error);
+    }
+  };
+
+  const rejectFriendRequest = async (requesterUsername: string) => {
+    try {
+      await axios.post(
+        'http://localhost:5050/api/v1/social/rejectFriendRequest',
+        { requesterUsername },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      alert('Friend request rejected');
+      fetchPendingRequests();
+    } catch (error) {
+      console.error('Error rejecting friend request:', error);
+    }
+  };
+
   const filteredUsers = users.filter((user) => {
     const matchesSearch = user.full_name.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesSearch && user.isFriend;
@@ -67,11 +129,11 @@ export default function Leaderboard() {
               Your Saving Streak
             </h2>
             <p className="text-lg mt-2">
-              You're on a {currentUser.current_streak}-month streak! Keep going!
+              You're on a {user?.current_streak}-month streak! Keep going!
             </p>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold">{currentUser.total_points} pts</p>
+            <p className="text-3xl font-bold">{user?.total_points} pts</p>
             <p className="text-sm opacity-75">Total Points</p>
           </div>
         </div>
@@ -79,11 +141,11 @@ export default function Leaderboard() {
           <div className="h-2 bg-white/20 rounded-full">
             <div
               className="h-full bg-white rounded-full transition-all duration-500"
-              style={{ width: `${(currentUser.current_streak % 12) * 8.33}%` }}
+              style={{ width: `${(user?.current_streak % 12) * 8.33}%` }}
             ></div>
           </div>
           <p className="text-sm mt-2 opacity-75">
-            {12 - (currentUser.current_streak % 12)} months until next rank
+            {12 - (user?.current_streak % 12)} months until next rank
           </p>
         </div>
       </div>
@@ -122,6 +184,43 @@ export default function Leaderboard() {
                   {getBadgeForStreak(user.current_streak).name}
                 </p>
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pending Friend Requests */}
+      <div className="bg-white rounded-lg shadow-lg p-6">
+        <h3 className="text-xl font-semibold mb-4 flex items-center">
+          <Users className="w-6 h-6 mr-2" />
+          Pending Friend Requests
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {pendingRequests.map((user) => (
+            <div key={user.id} className="flex items-center space-x-4 p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+              <img
+                src={user.avatar_url}
+                alt={user.full_name}
+                className="w-12 h-12 rounded-full"
+              />
+              <div className="flex-1">
+                <h4 className="font-semibold">{user.full_name}</h4>
+                <p className={`text-sm ${getBadgeForStreak(user.current_streak).color}`}>
+                  {getBadgeForStreak(user.current_streak).name}
+                </p>
+              </div>
+              <button
+                onClick={() => acceptFriendRequest(user.username)}
+                className="bg-green-500 text-white px-4 py-2 rounded-lg"
+              >
+                Accept
+              </button>
+              <button
+                onClick={() => rejectFriendRequest(user.username)}
+                className="bg-red-500 text-white px-4 py-2 rounded-lg"
+              >
+                Reject
+              </button>
             </div>
           ))}
         </div>
