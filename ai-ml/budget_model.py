@@ -1,6 +1,8 @@
 from typing import List, Optional
 from pydantic import BaseModel
 from langchain_groq import ChatGroq
+from models.budget import Budget
+from utils.llm_helper import create_llm
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 import json
@@ -45,17 +47,31 @@ prompt = ChatPromptTemplate.from_messages([
 
 chain = prompt | llm | parser
 
-def save_json_to_file(data, filename):
-    with open(filename, 'w') as json_file:
-        json.dump(data, json_file, indent=2)
+class BudgetService:
+    def __init__(self):
+        self.llm = create_llm()
+        self.parser = JsonOutputParser(pydantic_object=Budget)
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", """Extract budget details into JSON with this structure:
+                {
+                    "income": income_value,
+                    "savings": savings_value,
+                    "expenses": [
+                        {"category": "category_name", "allocated_amount": amount, "actual_spent": optional_amount}
+                    ]
+                }"""),
+            ("user", "{input}")
+        ])
+        self.chain = self.prompt | self.llm | self.parser
 
-def parse_budget(description: str) -> dict:
-    result = chain.invoke({"input": description})
-    # print(json.dumps(result, indent=2))
-    save_json_to_file(result,'budget_data.json')
-# budget_description = """I earn 5000 per month. I allocate 2000 for rent, 500 for groceries, 
-# 300 for utilities, and 500 for entertainment. I save 1000 each month."""
-# parse_budget(budget_description)
+    def save_json_to_file(self, data, filename):
+        with open(filename, 'w') as json_file:
+            json.dump(data, json_file, indent=2)
+
+    def parse_budget(self, description: str) -> dict:
+        result = self.chain.invoke({"input": description})
+        self.save_json_to_file(result, 'budget_data.json')
+        return result
 
 def budget_model(budget_description):
     # budget_description = input("Enter the prompt")
