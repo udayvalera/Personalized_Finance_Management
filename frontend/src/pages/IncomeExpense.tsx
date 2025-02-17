@@ -15,7 +15,7 @@ interface Entry {
 }
 
 const IncomeExpense: React.FC = () => {
-  const AI_URL = 'http://localhost:8080/receipt';
+  const AI_URL = 'http://localhost:8080/api/receipt';
   const BASE_URL = 'http://localhost:5050/api/v1/finance/create-expense';
 
   const [entries, setEntries] = useState<Entry[]>([]);

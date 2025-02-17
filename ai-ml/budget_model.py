@@ -9,7 +9,6 @@ import json
 from dotenv import load_dotenv
 import os
 
-
 load_dotenv()
 
 API_KEY = os.environ.get("GROQ_API_KEY")
@@ -25,14 +24,8 @@ class Budget(BaseModel):
     savings: float
     expenses: List[BudgetCategory]
 
-llm = ChatGroq(
-    model_name=MODEL_NAME,
-    temperature=0.7,
-    api_key=API_KEY
-)
-
+llm = create_llm()
 parser = JsonOutputParser(pydantic_object=Budget)
-
 prompt = ChatPromptTemplate.from_messages([
     ("system", """Extract budget details into JSON with this structure:
         {{
@@ -47,32 +40,14 @@ prompt = ChatPromptTemplate.from_messages([
 
 chain = prompt | llm | parser
 
-class BudgetService:
-    def __init__(self):
-        self.llm = create_llm()
-        self.parser = JsonOutputParser(pydantic_object=Budget)
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """Extract budget details into JSON with this structure:
-                {
-                    "income": income_value,
-                    "savings": savings_value,
-                    "expenses": [
-                        {"category": "category_name", "allocated_amount": amount, "actual_spent": optional_amount}
-                    ]
-                }"""),
-            ("user", "{input}")
-        ])
-        self.chain = self.prompt | self.llm | self.parser
+def save_json_to_file(data, filename):
+    with open(filename, 'w') as json_file:
+        json.dump(data, json_file, indent=2)
 
-    def save_json_to_file(self, data, filename):
-        with open(filename, 'w') as json_file:
-            json.dump(data, json_file, indent=2)
-
-    def parse_budget(self, description: str) -> dict:
-        result = self.chain.invoke({"input": description})
-        self.save_json_to_file(result, 'budget_data.json')
-        return result
+def parse_budget(description: str) -> dict:
+    result = chain.invoke({"input": description})
+    # save_json_to_file(result, 'budget_data.json')
+    return result
 
 def budget_model(budget_description):
-    # budget_description = input("Enter the prompt")
-    parse_budget(budget_description)
+    return parse_budget(budget_description)

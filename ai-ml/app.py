@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from budget_model import BudgetService
+from budget_model import parse_budget
 from financial_recommender import FinancialRecommender
 from stress_score import StressScoreCalculator
 from reciept_model import extract_text_from_receipt, query_llm
@@ -13,11 +13,10 @@ app = Flask(__name__)
 CORS(app)
 
 # Services initialization
-budget_service = BudgetService()
 financial_recommender = FinancialRecommender()
 stress_calculator = StressScoreCalculator()
 
-@app.route('/receipt', methods=['POST'])
+@app.route('/api/receipt', methods=['POST'])
 def process_receipt():
     if 'file' not in request.files:
         return jsonify({"error": "No file part"}), 400
@@ -54,9 +53,10 @@ def create_budget():
         return jsonify({'error': 'Description is required'}), 400
     
     try:
-        budget = budget_service.parse_budget(description)
+        budget = parse_budget(description)
         return jsonify(budget)
     except Exception as e:
+        print(e)
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/recommendations', methods=['POST'])
@@ -79,4 +79,4 @@ def calculate_stress_score():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8080)
