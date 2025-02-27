@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../lib/supabase';
+import axios from 'axios';
 import { Wallet, PiggyBank, LineChart, Target, ArrowRight, DollarSign, Building, Briefcase } from 'lucide-react';
 
 interface InvestmentAsset {
@@ -75,50 +75,44 @@ export default function FirstTimeRegistration() {
     try {
       if (!user) throw new Error('No user found');
 
-      // Insert financial profile data
-      const { error: profileError } = await supabase
-        .from('profiles')
-        .update({
-          monthly_income: profile.monthlyIncome,
-          current_debt: profile.currentDebt,
-          debt_type: profile.debtType,
-          portfolio_value: profile.portfolioValue,
-          primary_goal: profile.primaryGoal,
-          onboarding_completed: true
-        })
-        .eq('id', user.id);
+      // Prepare the data for the backend
+      const financialData = {
+        monthlyIncome: profile.monthlyIncome,
+        currentDebts: [
+          {
+            amount: profile.currentDebt,
+            debtType: profile.debtType,
+          },
+        ],
+        investmentPortfolio: {
+          totalValue: profile.portfolioValue,
+          allocation: {
+            stocks: profile.investments.find(inv => inv.type === 'stocks')?.percentage || 0,
+            bonds: profile.investments.find(inv => inv.type === 'bonds')?.percentage || 0,
+            realEstate: profile.investments.find(inv => inv.type === 'real_estate')?.percentage || 0,
+          },
+        },
+        primaryFinancialGoal: profile.primaryGoal,
+      };
 
-      if (profileError) throw profileError;
+      // Send the data to the backend
+      const response = await axios.post(
+        'http://localhost:5050/api/auth/add-financial-info',
+        financialData,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        }
+      );
 
-      // Insert investment breakdown
-      const { error: investmentError } = await supabase
-        .from('investments')
-        .insert(
-          profile.investments.map(inv => ({
-            user_id: user.id,
-            type: inv.type,
-            amount: (profile.portfolioValue * inv.percentage) / 100,
-            description: `Initial ${inv.type} investment`
-          }))
-        );
-
-      if (investmentError) throw investmentError;
-
-      // Create initial goal
-      const { error: goalError } = await supabase
-        .from('goals')
-        .insert({
-          user_id: user.id,
-          name: FINANCIAL_GOALS.find(g => g.id === profile.primaryGoal)?.label,
-          target_amount: profile.monthlyIncome * 12, // Example target
-          target_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString() // 1 year from now
-        });
-
-      if (goalError) throw goalError;
-
-      navigate('/dashboard');
-    } catch (err) {
-      console.error('Error saving profile:', err);
+      if (response.status === 201) {
+        navigate('/dashboard');
+      } else {
+        throw new Error('Failed to save financial profile');
+      }
+    } catch (error) {
+      console.error('Error saving profile:', error);
       setError('Failed to save your profile. Please try again.');
     } finally {
       setLoading(false);
