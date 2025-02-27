@@ -9,7 +9,7 @@ const {
   forgotPasswordController,
   resetPasswordController,
 } = require("../controllers/auth/forgetPasswordController");
-const addFinancialInfo = require("../controllers/auth/addInfoController");
+const { addFinancialInfo } = require("../controllers/auth/addInfoController");
 
 //Middlewares
 const { authenticate } = require("../middleware/authMiddleware");
