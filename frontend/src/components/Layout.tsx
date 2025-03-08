@@ -47,7 +47,7 @@ function NavItem({ to, icon, label, isActive, isSidebarCollapsed }: NavItemProps
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const location = useLocation();
-  const { signOut } = useAuth();
+  const { logout } = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
@@ -146,7 +146,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               isSidebarCollapsed={isSidebarCollapsed}
             />
             <button
-              onClick={() => signOut()}
+              onClick={() => logout()}
               className={`flex items-center w-full mt-2 px-4 py-3 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors ${
                 isSidebarCollapsed ? 'justify-center' : 'space-x-3'
               }`}

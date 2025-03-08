@@ -22,7 +22,7 @@ export default function SignUp() {
       await register(username, email, password);
 
       // Redirect to the OTP verification page after successful registration
-      navigate('/enter-otp');
+      navigate('/enter-otp', { state: { email } });
     } catch (err) {
       // Handle errors
       console.log(err)

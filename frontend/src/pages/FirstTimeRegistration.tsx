@@ -18,21 +18,20 @@ interface FinancialProfile {
   primaryGoal: string;
 }
 
+// Updated INVESTMENT_TYPES (remove incompatible entries)
 const INVESTMENT_TYPES = [
   { id: 'stocks', label: 'Stocks' },
   { id: 'bonds', label: 'Bonds' },
   { id: 'real_estate', label: 'Real Estate' },
-  { id: 'crypto', label: 'Cryptocurrency' },
-  { id: 'cash', label: 'Cash/Savings' },
-  { id: 'other', label: 'Other' }
 ];
 
+// Updated FINANCIAL_GOALS (match backend enum exactly)
 const FINANCIAL_GOALS = [
-  { id: 'house', label: 'Saving for a House', icon: Building },
-  { id: 'retirement', label: 'Retirement Planning', icon: Briefcase },
-  { id: 'debt_free', label: 'Debt-Free Living', icon: DollarSign },
-  { id: 'investment', label: 'Investment Growth', icon: LineChart },
-  { id: 'emergency', label: 'Emergency Fund', icon: PiggyBank }
+  { id: 'Saving for a House', label: 'Saving for a House', icon: Building },
+  { id: 'Retirement Planning', label: 'Retirement Planning', icon: Briefcase },
+  { id: 'Debt Free Living', label: 'Debt Free Living', icon: DollarSign },
+  { id: 'Building an Emergency Fund', label: 'Building an Emergency Fund', icon: PiggyBank },
+  { id: 'Other', label: 'Other', icon: Wallet },
 ];
 
 export default function FirstTimeRegistration() {
@@ -40,20 +39,20 @@ export default function FirstTimeRegistration() {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  
+
   const [profile, setProfile] = useState<FinancialProfile>({
     monthlyIncome: 0,
     currentDebt: 0,
     debtType: '',
     portfolioValue: 0,
     investments: [],
-    primaryGoal: ''
+    primaryGoal: '',
   });
 
   const handleInvestmentChange = (type: string, percentage: number) => {
     const updatedInvestments = [...profile.investments];
-    const existingIndex = updatedInvestments.findIndex(inv => inv.type === type);
-    
+    const existingIndex = updatedInvestments.findIndex((inv) => inv.type === type);
+
     if (existingIndex >= 0) {
       if (percentage === 0) {
         updatedInvestments.splice(existingIndex, 1);
@@ -87,9 +86,9 @@ export default function FirstTimeRegistration() {
         investmentPortfolio: {
           totalValue: profile.portfolioValue,
           allocation: {
-            stocks: profile.investments.find(inv => inv.type === 'stocks')?.percentage || 0,
-            bonds: profile.investments.find(inv => inv.type === 'bonds')?.percentage || 0,
-            realEstate: profile.investments.find(inv => inv.type === 'real_estate')?.percentage || 0,
+            stocks: profile.investments.find((inv) => inv.type === 'stocks')?.percentage || 0,
+            bonds: profile.investments.find((inv) => inv.type === 'bonds')?.percentage || 0,
+            realEstate: profile.investments.find((inv) => inv.type === 'real_estate')?.percentage || 0,
           },
         },
         primaryFinancialGoal: profile.primaryGoal,
@@ -97,7 +96,7 @@ export default function FirstTimeRegistration() {
 
       // Send the data to the backend
       const response = await axios.post(
-        'http://localhost:5050/api/auth/add-financial-info',
+        'http://localhost:5050/api/v1/auth/add-financial-info',
         financialData,
         {
           headers: {
@@ -175,13 +174,20 @@ export default function FirstTimeRegistration() {
                     placeholder="0.00"
                   />
                 </div>
-                <input
-                  type="text"
+                <select
                   value={profile.debtType}
                   onChange={(e) => setProfile({ ...profile, debtType: e.target.value })}
                   className="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="Type (e.g., student loans, credit card)"
-                />
+                  required
+                >
+                  <option value="">Select Debt Type</option>
+                  <option value="Credit Card">Credit Card</option>
+                  <option value="Student Loan">Student Loan</option>
+                  <option value="Mortgage">Mortgage</option>
+                  <option value="Car Loan">Car Loan</option>
+                  <option value="Personal Loan">Personal Loan</option>
+                  <option value="Other">Other</option>
+                </select>
               </div>
             </div>
 
@@ -204,7 +210,7 @@ export default function FirstTimeRegistration() {
                     placeholder="Total portfolio value"
                   />
                 </div>
-                
+
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {INVESTMENT_TYPES.map((type) => (
                     <div key={type.id} className="space-y-2">
@@ -215,7 +221,7 @@ export default function FirstTimeRegistration() {
                         type="number"
                         min="0"
                         max="100"
-                        value={profile.investments.find(inv => inv.type === type.id)?.percentage || ''}
+                        value={profile.investments.find((inv) => inv.type === type.id)?.percentage || ''}
                         onChange={(e) => handleInvestmentChange(type.id, Number(e.target.value))}
                         className="block w-full rounded-lg border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500"
                       />

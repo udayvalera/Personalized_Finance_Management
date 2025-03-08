@@ -1,15 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LogIn } from 'lucide-react';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { login, isAuthenticated } = useAuth(); // Use isAuthenticated from AuthContext
+  const location = useLocation();
+  const { login, isAuthenticated, user } = useAuth(); // Use isAuthenticated from AuthContext
+
+  // Extract message from location.state
+  useEffect(() => {
+    if (location.state?.message) {
+      setMessage(location.state.message);
+      // Clear the message after displaying it
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -27,6 +38,7 @@ export default function SignIn() {
             break;
           case 403:
             setError('Account not verified. Please check your email for the OTP.');
+            navigate('/enter-otp', { state: { email } });
             break;
           default:
             setError('Failed to sign in. Please try again.');
@@ -42,9 +54,13 @@ export default function SignIn() {
   // Redirect to dashboard if authentication is successful
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/');
+      if (user?.hasFilledAdditionalInfo) {
+        navigate('/');
+      } else {
+        navigate('/first-time-setup');
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
@@ -65,9 +81,15 @@ export default function SignIn() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white dark:bg-gray-800 py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {error && (
+        {error && (
             <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg">
               {error}
+            </div>
+          )}
+
+          {message && (
+            <div className="mb-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-600 dark:text-green-400 px-4 py-3 rounded-lg">
+              {message}
             </div>
           )}
 

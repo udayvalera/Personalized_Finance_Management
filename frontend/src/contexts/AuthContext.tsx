@@ -16,6 +16,7 @@ interface AuthContextType {
   token: string | null;
   login: (email: string, password: string) => Promise<void>;
   register: (username: string, email: string, password: string) => Promise<void>;
+  verifyOTP: (email: string, otp: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -77,6 +78,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const verifyOTP = async (email: string, otp: string) => {
+    try {
+      const response = await axios.post('http://localhost:5050/api/v1/auth/verify-otp', {
+        email,
+        otp,
+      });
+
+      console.log('OTP verified successfully:', response.data.message);
+    } catch (error) {
+      console.error('OTP verification failed:', error);
+      if (axios.isAxiosError(error)) {
+        const message = error.response?.data?.message || 'OTP verification failed';
+        throw new Error(message);
+      } else {
+        throw new Error('An unexpected error occurred');
+      }
+    }
+  };
+
   // Logout function
   const logout = () => {
     localStorage.removeItem('token');
@@ -87,13 +107,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // Validate token on initial load
   useEffect(() => {
     const validateToken = async () => {
+      if (!token) return; // Prevent unnecessary validation
+  
       try {
         const response = await axios.get('http://localhost:5050/api/v1/auth/validate-token', {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
-
+  
         const { user } = response.data;
         setUser(user);
       } catch (error) {
@@ -101,14 +123,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logout();
       }
     };
-
-    if (token) {
-      validateToken();
-    }
+  
+    validateToken();
   }, [token]);
+  
 
   return (
-    <AuthContext.Provider value={{ user, token, login, register, logout, isAuthenticated }}>
+    <AuthContext.Provider value={{ user, token, login, register, verifyOTP, logout, isAuthenticated }}>
       {children}
     </AuthContext.Provider>
   );

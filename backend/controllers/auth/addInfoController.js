@@ -1,5 +1,5 @@
 const FinancialProfile = require('../../models/FinancialProfile');
-
+const User = require('../../models/User');
 // Handle form submission for financial profile
 const addFinancialInfo = async (req, res) => {
   const { monthlyIncome, currentDebts, investmentPortfolio, primaryFinancialGoal } = req.body;
@@ -8,6 +8,7 @@ const addFinancialInfo = async (req, res) => {
   try {
     // Check if a financial profile already exists for the user
     const existingProfile = await FinancialProfile.findOne({ userId });
+    const user = await User.findById({ _id: userId });
     if (existingProfile) {
       return res.status(400).json({ message: 'Financial profile already exists for this user.' });
     }
@@ -24,6 +25,9 @@ const addFinancialInfo = async (req, res) => {
     // Save the profile to the database
     await newFinancialProfile.save();
 
+    // Update the user's hasFilledAdditionalInfo field to true
+    user.hasFilledAdditionalInfo = true;
+    await user.save();
     // Respond with success message
     res.status(201).json({ message: 'Financial profile created successfully!', profile: newFinancialProfile });
   } catch (error) {

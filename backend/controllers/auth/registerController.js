@@ -33,8 +33,8 @@ const registerController = async (req, res) => {
             otpExpires, // Store the OTP expiration time
         });
 
-        console.log('Current Time:', new Date());
-        console.log('OTP Expires:', otpExpires);
+        // console.log('Current Time:', new Date());
+        // console.log('OTP Expires:', otpExpires);
         // Save the user to the database
         await newUser.save();
 

@@ -1,7 +1,6 @@
 import React from 'react';
-import { LineChart, PieChart, Wallet, TrendingUp, Target, Brain } from 'lucide-react';
+import { LineChart, Wallet, TrendingUp, Target, Brain } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import { Pie } from 'react-chartjs-2';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
