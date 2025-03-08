@@ -16,7 +16,7 @@ const {
 } = require("../controllers/finance/goalController");
 const {
   createBudget,
-  getBudgets,
+  getBudget,
   editBudget,
   removeBudget,
 } = require("../controllers/finance/budgetController");
@@ -43,7 +43,7 @@ router.post("/edit-goal/:goalId", editGoal);
 router.delete("/remove-goal/:goalId", removeGoal);
 
 router.post("/create-budget", createBudget);
-router.get("/get-budgets", getBudgets);
+router.get("/get-budget", getBudget);
 router.post("/edit-budget/:budgetId", editBudget);
 router.delete("/remove-budget/:budgetId", removeBudget);
 

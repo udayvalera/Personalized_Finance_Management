@@ -1,4 +1,4 @@
-const User = require('../../models/User');  // Import the User model
+const User = require("../../models/User"); // Import the User model
 const bcrypt = require("bcryptjs");
 const { generateToken } = require("../../utils/jwtUtils"); // Import the generateToken function for JWT
 
@@ -20,11 +20,9 @@ const loginController = async (req, res) => {
 
     // Check if the account is verified
     if (!user.isVerified) {
-      return res
-        .status(403)
-        .json({
-          message: "Account not verified. Please verify your email first.",
-        });
+      return res.status(403).json({
+        message: "Account not verified. Please verify your email first.",
+      });
     }
 
     // Compare the provided password with the hashed password in the database
@@ -34,7 +32,12 @@ const loginController = async (req, res) => {
     }
 
     // Generate a JWT token for the user
-    const token = generateToken({ userId: user._id, isAdmin: user.isAdmin });
+    const token = generateToken({
+      userId: user._id,
+      isAdmin: user.isAdmin,
+      email: user.email,
+      username: user.username,
+    });
 
     // Respond with the token and user details (excluding sensitive information)
     res.status(200).json({

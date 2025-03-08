@@ -109,9 +109,54 @@ const IncomeExpense: React.FC = memo(() => {
   const memoizedIncomePie = useMemo(() => <Pie data={incomeData} options={{ responsive: true }} />, [incomeData]);
   const memoizedExpensePie = useMemo(() => <Pie data={expenseData} options={{ responsive: true }} />, [expenseData]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setShowModal(false);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('Please log in to add entries.');
+      return;
+    }
+  
+    const { type, category, amount, date } = newEntry;
+  
+    // Frontend validation
+    if (!category || amount <= 0) {
+      alert('Category is required and amount must be greater than zero.');
+      return;
+    }
+  
+    try {
+      const url = type === 'income' 
+        ? 'http://localhost:5050/api/v1/finance/create-income' 
+        : 'http://localhost:5050/api/v1/finance/create-expense';
+  
+      const requestBody = type === 'income' 
+        ? { amount, category, description: category } // Using category as description
+        : { amount, category, description: category, date };
+  
+      const response = await axios.post(url, requestBody, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (response.status === 201 || response.status === 200) {
+        await fetchData(token); // Refresh data
+        setNewEntry({
+          type: 'expense',
+          category: '',
+          amount: 0,
+          date: new Date().toISOString().split('T')[0],
+          receipt: null,
+        });
+        setShowModal(false);
+        alert('Entry added successfully!');
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
   };
 
   const processReceipt = async (file: File) => {

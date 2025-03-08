@@ -47,7 +47,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
             {/* Streak Counter */}
             <div className="hidden sm:flex items-center space-x-1 text-orange-500">
               <Flame className="w-5 h-5" />
-              <span className="font-semibold">10</span>
+              <span className="font-semibold">0</span>
             </div>
 
             <Link

@@ -129,11 +129,11 @@ export default function Leaderboard() {
               Your Saving Streak
             </h2>
             <p className="text-lg mt-2">
-              You're on a {user?.current_streak}-month streak! Keep going!
+              You're on a 0 month streak! Keep going!
             </p>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-bold">{user?.total_points} pts</p>
+            <p className="text-3xl font-bold">0 pts</p>
             <p className="text-sm opacity-75">Total Points</p>
           </div>
         </div>
@@ -276,11 +276,7 @@ export default function Leaderboard() {
           {achievements.map((achievement) => (
             <div
               key={achievement.id}
-              className={`p-4 rounded-lg text-center transition-all duration-300 ${
-                achievement.unlocked
-                  ? 'bg-gradient-to-r from-green-50 to-blue-50 border border-green-200'
-                  : 'bg-gray-100 opacity-50'
-              }`}
+              className={`p-4 rounded-lg text-center transition-all duration-300 bg-gray-100 opacity-50`}
             >
               <div className="text-4xl mb-2">{achievement.icon}</div>
               <h4 className="font-semibold">{achievement.name}</h4>

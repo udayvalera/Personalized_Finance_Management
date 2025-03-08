@@ -28,19 +28,17 @@ exports.createCampaign = async (req, res) => {
       category,
       end_date,
       creator_id: anonymous ? null : req.user.id, // Set creator_id if not anonymous
-      creator_name: anonymous ? null : req.user.name, // Set creator_name if not anonymous
+      creator_name: anonymous ? null : req.user.username, // Set creator_name if not anonymous
       anonymous,
       proof,
       status: "pending", // Campaigns are created with a 'pending' status
     });
 
     await newCampaign.save();
-    res
-      .status(201)
-      .json({
-        message: "Campaign created successfully!",
-        campaign: newCampaign,
-      });
+    res.status(201).json({
+      message: "Campaign created successfully!",
+      campaign: newCampaign,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
@@ -87,12 +85,10 @@ exports.moderateCampaign = async (req, res) => {
     campaign.status = status;
     await campaign.save();
 
-    res
-      .status(200)
-      .json({
-        message: `Campaign status updated to ${status} successfully!`,
-        campaign,
-      });
+    res.status(200).json({
+      message: `Campaign status updated to ${status} successfully!`,
+      campaign,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

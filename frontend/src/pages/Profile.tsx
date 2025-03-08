@@ -12,8 +12,8 @@ export default function Profile() {
 
   // Hardcoded data for demonstration
   const userData = {
-    fullName: 'John Doe',
-    email: 'john@example.com',
+    fullName: user?.username,
+    email: user?.email,
     accountType: 'Basic',
     memberSince: '2024-01-01',
     healthScore: 85,
@@ -79,7 +79,7 @@ export default function Profile() {
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
                 <div className="flex items-center space-x-2 text-orange-500">
                   <Flame className="w-6 h-6" />
-                  <span className="text-xl font-bold">{userData.streak} Day Streak!</span>
+                  <span className="text-xl font-bold">0 Day Streak!</span>
                 </div>
               </div>
               <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">

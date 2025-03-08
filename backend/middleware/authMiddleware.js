@@ -11,8 +11,11 @@ const authenticate = (req, res, next) => {
   if (!decoded) {
     return res.status(401).json({ message: "Token is not valid" });
   }
-
-  req.user = { id: decoded.userId }; // Set req.user.id
+  req.user = {
+    id: decoded.userId,
+    username: decoded.username,
+    email: decoded.email,
+  }; // Set req.user.id
   // console.log(req.user.id);
   next();
 };

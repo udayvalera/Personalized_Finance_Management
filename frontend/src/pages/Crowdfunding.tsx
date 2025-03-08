@@ -31,7 +31,8 @@ export default function Crowdfunding() {
     goal_amount: 0,
     image_url: '',
     category: '',
-    end_date: ''
+    end_date: '',
+    proof: ''  // New proof field
   });
 
   const categories = [
@@ -173,6 +174,18 @@ export default function Crowdfunding() {
                     rows={4}
                     className="w-full px-3 py-2 border dark:border-gray-700 rounded-lg dark:bg-gray-700 dark:text-white"
                     required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Proof</label>
+                  <textarea
+                    name="proof"
+                    value={formData.proof}
+                    onChange={handleInputChange}
+                    rows={4}
+                    className="w-full px-3 py-2 border dark:border-gray-700 rounded-lg dark:bg-gray-700 dark:text-white"
+                    required
+                    placeholder="Provide evidence or verification for your campaign"
                   />
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
