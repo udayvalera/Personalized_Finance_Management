@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@million/lint": "^1.0.14",
     "@supabase/supabase-js": "^2.39.7",
     "axios": "^1.7.9",
     "chart.js": "^4.4.7",
