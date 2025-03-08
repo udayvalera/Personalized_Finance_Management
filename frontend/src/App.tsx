@@ -17,6 +17,8 @@ import Profile from './pages/Profile';
 import FirstTimeRegistration from './pages/FirstTimeRegistration';
 import Crowdfunding from './pages/Crowdfunding';
 import PrivateRoute from './components/PrivateRoute';
+import EnterOtp from './pages/EnterOTP';
+import { useMemo } from 'react';
 
 function App() {
   return (
@@ -26,8 +28,9 @@ function App() {
           <Routes>
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
+            <Route path="/enter-otp" element={<EnterOtp />} />
             <Route path="/first-time-setup" element={<FirstTimeRegistration />} />
-            <Route element={<PrivateRoute />}>
+            <Route element={useMemo(() => <PrivateRoute />, [])}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/income-expense" element={<IncomeExpense />} />
               <Route path="/budget" element={<BudgetPlanner />} />

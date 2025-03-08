@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { Search, Filter, TrendingUp, Users, Clock, Target, Plus, Share2, Heart, X } from 'lucide-react';
+import { Search, Users, Clock, Plus, Share2, Heart, X } from 'lucide-react';
 import axios from 'axios';
 
 interface Campaign {
@@ -49,7 +49,13 @@ export default function Crowdfunding() {
 
   const fetchCampaigns = async () => {
     try {
-      const response = await axios.get('http://localhost:5050/api/v1/social/crowdfunding/active');
+      const response = await axios.get('http://localhost:5050/api/v1/social/crowdfunding/active', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+        
+      );
       setCampaigns(response.data);
     } catch (error) {
       console.error('Failed to fetch campaigns:', error);

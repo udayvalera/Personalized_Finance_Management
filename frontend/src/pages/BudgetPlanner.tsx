@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { HandCoins, Plus, X, Check } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Pie } from 'react-chartjs-2';
@@ -58,7 +58,7 @@ interface AIBudgetRecommendation {
   }>;
 }
 
-const BudgetPlanner: React.FC = () => {
+const BudgetPlanner: React.FC = memo(() => {
   const [showModal, setShowModal] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
   const [showConfirmationModal, setShowConfirmationModal] = useState(false);
@@ -401,6 +401,6 @@ I want to save for retirement and build an emergency fund. Please help me create
       )}
     </div>
   );
-};
+});
 
 export default BudgetPlanner;

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Facebook, Twitter, Linkedin, Instagram, Youtube } from 'lucide-react';
+// No additional imports needed.
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
@@ -59,7 +60,7 @@ export default function Footer() {
                   <Linkedin className="w-5 h-5" />
                 </a>
                 <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
-                  <Instagram className="w-5 h-5" />
+                  {useMemo(() => <Instagram className="w-5 h-5" />, [])}
                 </a>
                 <a href="#" className="text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
                   <Youtube className="w-5 h-5" />

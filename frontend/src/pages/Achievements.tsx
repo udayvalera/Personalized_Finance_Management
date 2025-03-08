@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Trophy, Star, Target, Heart, Calendar, Brain, Rocket, Award } from 'lucide-react';
 
 interface Achievement {

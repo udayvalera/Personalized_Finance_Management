@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useMemo } from 'react';
 import axios from 'axios';
 import { Plus, X, HandCoins } from 'lucide-react';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
@@ -14,7 +14,7 @@ interface Entry {
   date: string;
 }
 
-const IncomeExpense: React.FC = () => {
+const IncomeExpense: React.FC = memo(() => {
   const AI_URL = 'http://localhost:8080/api/receipt';
   const BASE_URL = 'http://localhost:5050/api/v1/finance/create-expense';
 
@@ -106,6 +106,9 @@ const IncomeExpense: React.FC = () => {
     ],
   };
 
+  const memoizedIncomePie = useMemo(() => <Pie data={incomeData} options={{ responsive: true }} />, [incomeData]);
+  const memoizedExpensePie = useMemo(() => <Pie data={expenseData} options={{ responsive: true }} />, [expenseData]);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setShowModal(false);
@@ -195,11 +198,11 @@ const IncomeExpense: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
           <h2 className="text-lg font-semibold mb-4">Income Distribution</h2>
-          <Pie data={incomeData} options={{ responsive: true }} />
+          {memoizedIncomePie}
         </div>
         <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm">
           <h2 className="text-lg font-semibold mb-4">Expense Distribution</h2>
-          <Pie data={expenseData} options={{ responsive: true }} />
+          {memoizedExpensePie}
         </div>
       </div>
 
@@ -392,6 +395,6 @@ const IncomeExpense: React.FC = () => {
       )}
     </div>
   );
-};
+});
 
 export default IncomeExpense;
