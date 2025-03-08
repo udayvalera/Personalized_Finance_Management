@@ -76,24 +76,27 @@ A comprehensive full-stack application that combines personal finance management
    cd ai-ml
    pip install -r requirements.txt
    ```
+### Environment Variables
+
+In each directory, set the values in `.env.example`, then rename the file to `.env` by removing `.example`.
 
 ## 🚀 Running the Application
 
 The application can be started using any of the following scripts:
 
-### Using Shell Script (Linux/Mac)
+### Frontend
 ```bash
-./start.sh
+cd frontend && npm run dev
 ```
 
-### Using PowerShell (Windows)
+### Backend
 ```powershell
-.\start-ps.bat
+cd backend && node app.js
 ```
 
 ### Using Command Prompt (Windows)
 ```cmd
-.\start-cmd.bat
+cd ai-ml && python app.py
 ```
 
 These scripts will:
@@ -109,11 +112,7 @@ These scripts will:
 ```
 ├── frontend/           # React TypeScript frontend
 ├── backend/            # Node.js Express backend
-├── ai-ml/              # Python AI/ML service
-├── logs/               # Application logs
-├── start.sh            # Unix startup script
-├── start-ps.bat        # PowerShell startup script
-└── start-cmd.bat       # Command Prompt startup script
+└── ai-ml/              # Python AI/ML service
 ```
 
 ## 🔧 Configuration
